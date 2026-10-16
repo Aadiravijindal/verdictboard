@@ -29,7 +29,7 @@ export default async function ResearchJobPage({ params, searchParams }: { params
         </div>
       )}
       {job.status === "FAILED" && (
-        <div className="mt-6 border border-danger p-5">
+        <div className="mt-6 rounded-xl2 bg-[#FDECEA] p-5">
           <p className="text-danger">Failed: {job.error}</p>
           <form action={retryResearch} className="mt-3"><input type="hidden" name="jobId" value={job.id} /><button className="btn-ghost">Retry</button></form>
         </div>
@@ -62,7 +62,7 @@ export default async function ResearchJobPage({ params, searchParams }: { params
                   return (
                     <li key={i} className="panel p-4 text-sm">
                       <label className="flex gap-3">
-                        <input type="checkbox" name="evidence" value={i} defaultChecked={check?.urlSeen} className="mt-1 accent-[#B8F36B]" />
+                        <input type="checkbox" name="evidence" value={i} defaultChecked={check?.urlSeen} className="mt-1 accent-[#0666EB]" />
                         <span>
                           <span className="label">{RELATION_LABEL[e.relation]} · {src ? `${SOURCE_TYPE_LABEL[src.sourceType]} · ${src.isPrimary ? "primary" : "secondary"}` : "source missing from list"}</span>
                           <span className="mt-1 block font-semibold">{src?.title ?? e.url}</span>

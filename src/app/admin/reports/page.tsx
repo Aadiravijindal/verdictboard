@@ -30,8 +30,8 @@ export default async function ReportsQueue({ searchParams }: { searchParams: Pro
               <form action={resolveReport} className="mt-3 flex flex-wrap gap-2">
                 <input type="hidden" name="id" value={r.id} />
                 <input name="resolution" required minLength={10} className="input min-w-64 flex-1" placeholder="Reason for decision" />
-                <label className="flex items-center gap-1"><input type="radio" name="status" value="ACCEPTED" required className="accent-[#B8F36B]" /> Accept</label>
-                <label className="flex items-center gap-1"><input type="radio" name="status" value="REJECTED" className="accent-[#B8F36B]" /> Reject</label>
+                <label className="flex items-center gap-1"><input type="radio" name="status" value="ACCEPTED" required className="accent-[#0666EB]" /> Accept</label>
+                <label className="flex items-center gap-1"><input type="radio" name="status" value="REJECTED" className="accent-[#0666EB]" /> Reject</label>
                 <button className="btn-primary">Record decision</button>
               </form>
             ) : (

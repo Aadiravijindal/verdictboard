@@ -24,9 +24,9 @@ export default async function ClaimsPage({ searchParams }: { searchParams: Promi
     prisma.topic.findMany({ where: published, orderBy: { sortOrder: "asc" } }),
   ]);
   return (
-    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-      <p className="label">Index</p>
-      <h1 className="h-display mt-2 text-6xl sm:text-7xl">Claim dossiers</h1>
+    <div className="mx-auto max-w-7xl px-4 pb-12 pt-14 sm:px-6">
+      <span className="eyebrow">Index</span>
+      <h1 className="h-display mt-4 text-[44px] sm:text-6xl">Claim dossiers</h1>
       <form className="mt-8 flex flex-wrap items-end gap-3 border border-line bg-panel p-4">
         <label><span className="label">Label</span>
           <select name="status" defaultValue={status ?? ""} className="input mt-1 w-44">

@@ -28,11 +28,11 @@ const ERRORS: Record<string, string> = {
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; sent?: string; error?: string }> }) {
   const { next = "/", sent, error } = await searchParams;
   return (
-    <div className="mx-auto max-w-md px-4 py-20">
-      <p className="label">Account</p>
-      <h1 className="h-display mt-2 text-6xl">Sign in</h1>
+    <div className="bg-surface px-4 py-16 sm:py-24"><div className="card mx-auto max-w-md p-8 sm:p-10">
+      <span className="eyebrow">Account</span>
+      <h1 className="h-display mt-4 text-[44px] sm:text-6xl">Sign in</h1>
       {sent ? (
-        <p className="mt-8 border border-agreed p-4 text-agreed">Check your inbox for a one-time sign-in link. It expires in 20 minutes.</p>
+        <p className="mt-8 rounded-2xl bg-agreed-soft p-4 text-agreed">Check your inbox for a one-time sign-in link. It expires in 20 minutes.</p>
       ) : (
         <form action={requestLink} className="mt-8 grid gap-4">
           <input type="hidden" name="next" value={next} />
@@ -41,12 +41,12 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             <input name="email" type="email" required autoComplete="email" className="input mt-1" placeholder="you@example.com" />
           </label>
           {error && ERRORS[error] && <p className="text-sm text-danger">{ERRORS[error]}</p>}
-          <button className="btn-primary justify-center">Email me a sign-in link</button>
+          <button className="btn-primary w-full">Email me a sign-in link</button>
           <p className="text-xs text-muted">
             No passwords. Your email is never shown publicly or included in analytics. Verification is a baseline against abuse — it does not prove one person per account, so we also use rate limits and show results from established accounts separately.
           </p>
         </form>
       )}
-    </div>
+    </div></div>
   );
 }

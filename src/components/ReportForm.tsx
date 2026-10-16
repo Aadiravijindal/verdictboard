@@ -44,7 +44,7 @@ export function ReportForm({ claimId, sourceId, signedIn }: { claimId?: string; 
     }
   }
 
-  if (state === "sent") return <p className="border border-agreed p-4 text-sm text-agreed">{message}</p>;
+  if (state === "sent") return <p className="rounded-2xl bg-agreed-soft p-4 text-sm text-agreed">{message}</p>;
 
   return (
     <form onSubmit={submit} className="grid gap-3">

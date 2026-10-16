@@ -7,24 +7,24 @@ export default function AboutPage() {
   const org = process.env.ORG_NAME ?? "VerdictBoard";
   const funding = process.env.FUNDING_DISCLOSURE;
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
-      <p className="label">Disclosure</p>
-      <h1 className="h-display mt-2 text-6xl sm:text-7xl">Funding &amp; governance</h1>
+    <div className="mx-auto max-w-4xl px-4 pb-12 pt-14 sm:px-6">
+      <span className="eyebrow">Disclosure</span>
+      <h1 className="h-display mt-4 text-[44px] sm:text-6xl">Funding &amp; governance</h1>
 
-      <section className="mt-10">
-        <h2 className="label border-b border-line pb-2">Who runs this</h2>
+      <section className="card mt-6 p-6 sm:p-8">
+        <h2 className="font-display text-2xl font-bold tracking-[-0.02em]">Who runs this</h2>
         <p className="mt-4 max-w-prose text-ink/85">{org} is an independent project. The ownership, legal entity and editorial leadership are listed here and updated whenever they change.</p>
       </section>
 
-      <section className="mt-10">
-        <h2 className="label border-b border-line pb-2">Funding</h2>
+      <section className="card mt-6 p-6 sm:p-8">
+        <h2 className="font-display text-2xl font-bold tracking-[-0.02em]">Funding</h2>
         <p className="mt-4 max-w-prose text-ink/85">
           {funding ?? "We accept no political advertising and no funding from governments, political parties, campaigns or armed groups. Every funder contributing more than 5% of annual income will be named here. Funding does not buy editorial influence, and funders see dossiers only when the public does."}
         </p>
       </section>
 
-      <section className="mt-10">
-        <h2 className="label border-b border-line pb-2">Editorial governance</h2>
+      <section className="card mt-6 p-6 sm:p-8">
+        <h2 className="font-display text-2xl font-bold tracking-[-0.02em]">Editorial governance</h2>
         <ul className="mt-4 list-disc space-y-2 pl-5 text-ink/85">
           <li>Roles: reviewers handle challenges; editors draft and publish; administrators manage accounts. No one may publish a claim they drafted.</li>
           <li>Staff and reviewers disclose relevant political affiliations and conflicts, and recuse themselves from affected dossiers.</li>
@@ -33,8 +33,8 @@ export default function AboutPage() {
         </ul>
       </section>
 
-      <section id="api" className="mt-10 scroll-mt-24">
-        <h2 className="label border-b border-line pb-2">Open data API</h2>
+      <section id="api" className="card mt-6 p-6 sm:p-8 scroll-mt-24">
+        <h2 className="font-display text-2xl font-bold tracking-[-0.02em]">Open data API</h2>
         <p className="mt-4 max-w-prose text-ink/85">Basic evidence and corrections are never paywalled. All published dossiers are available as JSON under CC BY 4.0:</p>
         <ul className="mt-3 space-y-1 font-mono text-sm">
           <li>GET <Link href="/api/public/claims" prefetch={false}>/api/public/claims</Link> — index of claims and labels</li>
@@ -43,8 +43,8 @@ export default function AboutPage() {
         <p className="mt-3 text-sm text-muted">Vote data is not included in the API, to protect users and limit manipulation incentives.</p>
       </section>
 
-      <section className="mt-10">
-        <h2 className="label border-b border-line pb-2">Privacy</h2>
+      <section className="card mt-6 p-6 sm:p-8">
+        <h2 className="font-display text-2xl font-bold tracking-[-0.02em]">Privacy</h2>
         <ul className="mt-4 list-disc space-y-2 pl-5 text-ink/85">
           <li>We store your email to sign you in. It is never shown publicly or used in analytics.</li>
           <li>Rate-limit records use keyed hashes of IP addresses and are deleted after two days.</li>

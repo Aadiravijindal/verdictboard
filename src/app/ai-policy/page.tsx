@@ -10,22 +10,22 @@ const USES: [string, string, string][] = [
 
 export default function AiPolicyPage() {
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
-      <p className="label">Policy</p>
-      <h1 className="h-display mt-2 text-6xl sm:text-7xl">How we use AI</h1>
+    <div className="mx-auto max-w-4xl px-4 pb-12 pt-14 sm:px-6">
+      <span className="eyebrow">Policy</span>
+      <h1 className="h-display mt-4 text-[44px] sm:text-6xl">How we use AI</h1>
       <p className="mt-4 max-w-prose text-lg text-ink/85">
         AI does the tedious collection, extraction, deduplication and cross-referencing. Humans approve every conclusion. An AI-generated summary never silently becomes a verified fact.
       </p>
-      <div className="mt-10 overflow-x-auto">
-        <table className="w-full min-w-[640px] border border-line text-left text-sm">
-          <thead className="bg-panel"><tr><th className="p-3 label">Where</th><th className="p-3 label">What it does</th><th className="p-3 label">Safeguard</th></tr></thead>
+      <div className="card mt-10 overflow-x-auto p-2">
+        <table className="w-full min-w-[640px] text-left text-[15px]">
+          <thead><tr><th className="p-3 label">Where</th><th className="p-3 label">What it does</th><th className="p-3 label">Safeguard</th></tr></thead>
           <tbody className="divide-y divide-line">
             {USES.map(([w, d, s]) => <tr key={w}><td className="p-3 font-semibold">{w}</td><td className="p-3">{d}</td><td className="p-3 text-muted">{s}</td></tr>)}
           </tbody>
         </table>
       </div>
-      <section className="mt-12">
-        <h2 className="label border-b border-line pb-2">The publication gate</h2>
+      <section className="card mt-6 p-6 sm:p-8">
+        <h2 className="font-display text-2xl font-bold tracking-[-0.02em]">The publication gate</h2>
         <ol className="mt-4 list-decimal space-y-2 pl-5 text-ink/85">
           <li>An editor reviews the AI draft, selects which evidence to keep and edits the wording.</li>
           <li>Each evidence link must be individually approved; quotes that could not be matched to retrieved text must be checked by hand or removed.</li>
@@ -34,8 +34,8 @@ export default function AiPolicyPage() {
           <li>High-impact conclusions, legal classifications and historical characterisations always receive full human review.</li>
         </ol>
       </section>
-      <section className="mt-12">
-        <h2 className="label border-b border-line pb-2">What AI never does here</h2>
+      <section className="card mt-6 p-6 sm:p-8">
+        <h2 className="font-display text-2xl font-bold tracking-[-0.02em]">What AI never does here</h2>
         <ul className="mt-4 list-disc space-y-2 pl-5 text-ink/85">
           <li>Assign or change a published label.</li>
           <li>Infer your political leaning, country or identity.</li>

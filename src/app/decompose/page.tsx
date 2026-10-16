@@ -9,9 +9,9 @@ export const metadata: Metadata = { title: "Check a claim", description: "Break 
 export default async function DecomposePage({ searchParams }: { searchParams: Promise<{ text?: string }> }) {
   const [user, sp] = await Promise.all([getCurrentUser(), searchParams]);
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
-      <p className="label text-accent">Claim checker</p>
-      <h1 className="h-display mt-2 text-6xl sm:text-7xl">What exactly is being claimed?</h1>
+    <div className="mx-auto max-w-4xl px-4 pb-12 pt-14 sm:px-6">
+      <span className="eyebrow">Claim checker</span>
+      <h1 className="h-display mt-4 text-[44px] sm:text-6xl">What exactly is being claimed?</h1>
       <p className="mt-4 max-w-prose text-muted">
         Paste a post, headline or quote. We break it into the precise questions that would have to be answered, the evidence that would answer them, and the loaded or vague terms to pin down — then point you to dossiers we have already published.
       </p>

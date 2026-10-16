@@ -32,9 +32,9 @@ export default async function AccountPage() {
   const user = await requireUser("/account");
   const votes = await prisma.vote.findMany({ where: { userId: user.id }, include: { claim: true, changes: true }, orderBy: { updatedAt: "desc" } });
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-      <p className="label">Account · {user.role.toLowerCase()}</p>
-      <h1 className="h-display mt-2 text-6xl">Your account</h1>
+    <div className="mx-auto max-w-3xl px-4 pb-12 pt-14 sm:px-6">
+      <span className="eyebrow">Account · {user.role.toLowerCase()}</span>
+      <h1 className="h-display mt-4 text-[44px] sm:text-6xl">Your account</h1>
       <p className="mt-2 text-muted">{user.email} · member since {formatDate(user.createdAt)}</p>
 
       <form action={saveProfile} className="mt-10 grid gap-4 panel p-5">
@@ -56,7 +56,7 @@ export default async function AccountPage() {
         <div><button className="btn-primary">Save</button></div>
       </form>
 
-      <section className="mt-10">
+      <section className="card mt-6 p-6 sm:p-8">
         <h2 className="label">Your assessments</h2>
         {votes.length === 0 ? <p className="mt-3 text-muted">You haven&apos;t assessed any claims yet.</p> : (
           <ul className="mt-3 divide-y divide-line border border-line">

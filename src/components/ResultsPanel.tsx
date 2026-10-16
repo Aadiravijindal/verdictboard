@@ -1,7 +1,7 @@
 import type { Breakdown, ClaimResults } from "@/lib/votes";
 import { STANCE_LABEL, formatDate } from "@/lib/labels";
 
-const BAR: Record<string, string> = { AGREE: "bg-ink", DISAGREE: "bg-muted", UNSURE: "bg-line" };
+const BAR: Record<string, string> = { AGREE: "bg-ink", DISAGREE: "bg-[#8B92A0]", UNSURE: "bg-[#D5D8DE]" };
 
 function pct(x: number) {
   return `${Math.round(x * 100)}%`;
@@ -10,14 +10,14 @@ function pct(x: number) {
 function Bars({ b }: { b: Breakdown }) {
   return (
     <div>
-      <div className="flex h-3 w-full overflow-hidden border border-line" role="img" aria-label={b.shares.map((s) => `${STANCE_LABEL[s.stance]} ${pct(s.share)}`).join(", ")}>
+      <div className="flex h-3 w-full gap-0.5 overflow-hidden rounded-full bg-surface" role="img" aria-label={b.shares.map((s) => `${STANCE_LABEL[s.stance]} ${pct(s.share)}`).join(", ")}>
         {b.shares.map((s) => <div key={s.stance} className={BAR[s.stance]} style={{ width: `${s.share * 100}%` }} />)}
       </div>
       <dl className="mt-2 grid grid-cols-3 gap-2 text-sm">
         {b.shares.map((s) => (
           <div key={s.stance}>
-            <dt className="label">{STANCE_LABEL[s.stance]}</dt>
-            <dd className="font-mono">{pct(s.share)} <span className="text-xs text-muted">({pct(s.low)}–{pct(s.high)})</span></dd>
+            <dt className="flex items-center gap-1.5 text-[13px] text-muted"><span className={`h-2 w-2 rounded-full ${BAR[s.stance]}`} />{STANCE_LABEL[s.stance]}</dt>
+            <dd className="font-display text-xl font-bold">{pct(s.share)} <span className="font-sans text-xs font-normal text-muted">({pct(s.low)}–{pct(s.high)})</span></dd>
           </div>
         ))}
       </dl>
@@ -29,7 +29,7 @@ export function ResultsPanel({ r }: { r: ClaimResults }) {
   return (
     <div className="space-y-6">
       <div>
-        <p className="label text-accent">What participating users believe</p>
+        <p className="font-display text-2xl font-bold tracking-[-0.02em]">What participating users believe</p>
         <p className="mt-1 text-sm text-muted">
           Not what the public believes, and not evidence. Users are self-selected and may be mobilised by campaigns. Bars use neutral greys — the colour of a result never signals a side.
         </p>
@@ -53,10 +53,10 @@ export function ResultsPanel({ r }: { r: ClaimResults }) {
         </>
       )}
       {r.impact ? (
-        <div className="border border-line p-4">
+        <div className="rounded-2xl bg-accent-soft p-5">
           <p className="label">Evidence-impact meter · {r.impact.pairedN} users voted before and after reading</p>
           <p className="mt-2">
-            <span className="h-display text-4xl">{pct(r.impact.changedShare)}</span> changed their answer after reviewing the dossier
+            <span className="font-display text-4xl font-bold tracking-[-0.03em]">{pct(r.impact.changedShare)}</span> changed their answer after reviewing the dossier
             <span className="text-sm text-muted"> ({pct(r.impact.changedLow)}–{pct(r.impact.changedHigh)})</span>.
           </p>
           <p className="mt-1 text-sm text-muted">

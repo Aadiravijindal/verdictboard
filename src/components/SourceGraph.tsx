@@ -8,10 +8,10 @@ interface Item {
 }
 
 const EDGE: Record<EvidenceRelation, string> = {
-  SUPPORTS: "#91CFA0",
-  PARTIALLY_SUPPORTS: "#C9D58F",
-  CONTRADICTS: "#E6C27A",
-  CONTEXT: "#6B7380",
+  SUPPORTS: "#0F8A4A",
+  PARTIALLY_SUPPORTS: "#7BA05B",
+  CONTRADICTS: "#B45F06",
+  CONTEXT: "#9AA0AB",
 };
 
 /** Draws cited sources grouped by origin, with edges to the claim coloured by relation. */
@@ -34,27 +34,27 @@ export function SourceGraph({ items, claimCode }: { items: Item[]; claimCode: st
           return (
             <g key={g.origin.id}>
               <path d={`M 400 ${y} C 520 ${y}, 560 ${claimY}, 640 ${claimY}`} fill="none" stroke={EDGE[rel]} strokeWidth={g.repeats.length + 1.5} opacity={0.9} />
-              <rect x={150} y={y - 15} width={250} height={30} fill="#15181B" stroke={g.origin.isPrimary ? "#B8F36B" : "#2A2F35"} />
-              <text x={160} y={y + 4} fill="#E8EAED" fontSize={12} fontFamily="Space Grotesk, sans-serif">
+              <rect x={150} y={y - 15} width={250} height={30} rx={10} fill={g.origin.isPrimary ? "#EAF2FF" : "#F4F5F7"} stroke={g.origin.isPrimary ? "#0666EB" : "#E7E8EC"} />
+              <text x={160} y={y + 4} fill="#0A0B0D" fontSize={12} fontWeight={500} fontFamily="Inter, sans-serif">
                 {g.origin.publisher.length > 34 ? `${g.origin.publisher.slice(0, 33)}…` : g.origin.publisher}
               </text>
               {g.repeats.map((r, j) => (
                 <g key={r.id}>
-                  <line x1={130 - j * 36} y1={y} x2={150 - j * 36} y2={y} stroke="#2A2F35" />
-                  <rect x={100 - j * 36} y={y - 10} width={30} height={20} fill="#0B0C0E" stroke="#6B7380" strokeDasharray="3 2" />
-                  <text x={115 - j * 36} y={y + 4} fill="#9AA1AB" fontSize={9} textAnchor="middle" fontFamily="JetBrains Mono, monospace">REP</text>
+                  <line x1={130 - j * 36} y1={y} x2={150 - j * 36} y2={y} stroke="#E7E8EC" />
+                  <rect x={100 - j * 36} y={y - 10} width={30} height={20} rx={6} fill="#FFFFFF" stroke="#9AA0AB" strokeDasharray="3 2" />
+                  <text x={115 - j * 36} y={y + 4} fill="#6A6F7A" fontSize={9} textAnchor="middle" fontFamily="JetBrains Mono, monospace">REP</text>
                 </g>
               ))}
             </g>
           );
         })}
-        <rect x={640} y={claimY - 22} width={110} height={44} fill="#B8F36B" />
-        <text x={695} y={claimY + 5} fill="#0B0C0E" fontSize={13} textAnchor="middle" fontFamily="JetBrains Mono, monospace" fontWeight={600}>{claimCode}</text>
+        <rect x={640} y={claimY - 22} width={110} height={44} rx={22} fill="#0A0B0D" />
+        <text x={695} y={claimY + 5} fill="#FFFFFF" fontSize={13} textAnchor="middle" fontFamily="Inter, sans-serif" fontWeight={700}>{claimCode}</text>
       </svg>
       <figcaption className="mt-3 text-sm text-muted">
-        <strong className="text-ink">{groups.length} independent origin{groups.length === 1 ? "" : "s"}</strong> across {sources.length} cited source{sources.length === 1 ? "" : "s"}. Lime borders mark primary records; dashed boxes are reports that repeat an origin and are not counted as independent confirmation. Edge colour shows the relation:
+        <strong className="text-ink">{groups.length} independent origin{groups.length === 1 ? "" : "s"}</strong> across {sources.length} cited source{sources.length === 1 ? "" : "s"}. Blue boxes mark primary records; dashed boxes are reports that repeat an origin and are not counted as independent confirmation. Edge colour shows the relation:
         {(Object.keys(EDGE) as EvidenceRelation[]).map((r) => (
-          <span key={r} className="ml-2 whitespace-nowrap"><span className="inline-block h-2 w-3 align-middle" style={{ background: EDGE[r] }} /> {RELATION_LABEL[r]}</span>
+          <span key={r} className="ml-2 whitespace-nowrap"><span className="inline-block h-2 w-3 rounded-full align-middle" style={{ background: EDGE[r] }} /> {RELATION_LABEL[r]}</span>
         ))}
       </figcaption>
       <ul className="sr-only">

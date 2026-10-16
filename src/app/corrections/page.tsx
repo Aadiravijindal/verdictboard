@@ -9,13 +9,13 @@ export const metadata: Metadata = { title: "Corrections log" };
 export default async function CorrectionsPage() {
   const rows = await prisma.correction.findMany({ orderBy: { createdAt: "desc" }, take: 500, include: { claim: true, topic: true } });
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
-      <h1 className="h-display text-6xl">Corrections log</h1>
+    <div className="mx-auto max-w-4xl px-4 pb-12 pt-14 sm:px-6">
+      <h1 className="h-display text-[44px] sm:text-6xl">Corrections log</h1>
       <p className="mt-4 max-w-prose text-muted">
         Every material change to a published dossier — its label, reason, proposition or scope, and any accepted correction — is listed here with what changed, when and why. We never silently rewrite a dossier.
       </p>
       {rows.length === 0 ? (
-        <p className="mt-10 panel p-5">No corrections have been issued yet.</p>
+        <p className="card mt-10 p-6">No corrections have been issued yet.</p>
       ) : (
         <ol className="mt-10 space-y-3">
           {rows.map((c) => (

@@ -28,7 +28,7 @@ export default async function SourcePage({ params }: { params: Promise<{ slug: s
   const s = await load((await params).slug);
   if (!s) notFound();
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
+    <div className="mx-auto max-w-4xl px-4 pb-12 pt-14 sm:px-6">
       <p className="label">Source record / {s.slug}</p>
       <h1 className="mt-3 text-3xl font-semibold sm:text-4xl">{s.title}</h1>
       <dl className="mt-6 grid gap-4 border border-line bg-panel p-5 text-sm sm:grid-cols-2">
