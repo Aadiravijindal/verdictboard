@@ -1,0 +1,445 @@
+// VerdictBoard data model.
+// Three layers are kept structurally separate:
+//   A. What the evidence establishes  -> Source, EvidenceLink, Event, Claim.status
+//   B. What the facts mean            -> Perspective
+//   C. What people believe            -> Vote (never read when computing Claim.status)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  REVIEWER
+  EDITOR
+  ADMIN
+}
+
+enum PublishStatus {
+  DRAFT
+  IN_REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+/// Main interface labels. Never derived from votes.
+enum ClaimStatus {
+  WIDELY_AGREED
+  DISPUTED
+  UNVERIFIED
+}
+
+/// Why a claim carries its label.
+enum ReasonCode {
+  CONFIRMED_PRIMARY
+  CORROBORATED_INDEPENDENT
+  PARTIALLY_SUPPORTED
+  CONTRADICTED
+  INSUFFICIENT_EVIDENCE
+  LEGAL_UNRESOLVED
+  INTERPRETATION_DISPUTED
+  OUTDATED
+}
+
+/// Factual, causal, responsibility, legal and value questions never share a poll.
+enum ClaimKind {
+  FACTUAL
+  CAUSAL
+  RESPONSIBILITY
+  LEGAL
+  VALUE
+}
+
+enum SourceType {
+  COURT_RECORD
+  LEGISLATION
+  OFFICIAL_RECORD
+  OFFICIAL_STATEMENT
+  OFFICIAL_DATA
+  INTERGOVERNMENTAL
+  INDEPENDENT_INVESTIGATION
+  ACADEMIC
+  NGO_REPORT
+  NEWS_REPORT
+  PARTY_STATEMENT
+  OTHER
+}
+
+enum EvidenceRelation {
+  SUPPORTS
+  PARTIALLY_SUPPORTS
+  CONTRADICTS
+  CONTEXT
+}
+
+enum EventCertainty {
+  DOCUMENTED
+  DETAILS_DISPUTED
+  INTERPRETATION
+}
+
+enum DatePrecision {
+  DAY
+  MONTH
+  YEAR
+}
+
+enum VotePhase {
+  BEFORE
+  AFTER
+}
+
+enum Stance {
+  AGREE
+  DISAGREE
+  UNSURE
+}
+
+enum ReportKind {
+  CORRECTION
+  COUNTEREVIDENCE
+  MISSING_SOURCE
+  SOURCE_MISREPRESENTED
+  ABUSE
+  OTHER
+}
+
+enum ReportStatus {
+  OPEN
+  ACCEPTED
+  REJECTED
+}
+
+enum ResearchStatus {
+  QUEUED
+  RUNNING
+  NEEDS_REVIEW
+  FAILED
+  ACCEPTED
+  DISCARDED
+}
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  displayName     String?
+  role            Role      @default(USER)
+  emailVerifiedAt DateTime?
+  /// Optional, self-reported. Never inferred from behaviour.
+  country         String?
+  leaning         String?
+  banned          Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+
+  sessions     Session[]
+  votes        Vote[]
+  reports      Report[]      @relation("ReportAuthor")
+  resolved     Report[]      @relation("ReportResolver")
+  researchJobs ResearchJob[]
+  corrections  Correction[]
+  auditLogs    AuditLog[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model LoginToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  email     String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([email])
+}
+
+model Topic {
+  id             String        @id @default(cuid())
+  slug           String        @unique
+  code           String        @unique
+  title          String
+  category       String
+  region         String
+  kicker         String
+  summary        String
+  overview       String
+  scope          String
+  sortOrder      Int           @default(100)
+  publishStatus  PublishStatus @default(DRAFT)
+  lastReviewedAt DateTime      @default(now())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  events       Event[]
+  claims       Claim[]
+  perspectives Perspective[]
+  corrections  Correction[]
+}
+
+model Event {
+  id            String         @id @default(cuid())
+  slug          String         @unique
+  topicId       String
+  topic         Topic          @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  date          DateTime
+  datePrecision DatePrecision  @default(DAY)
+  title         String
+  description   String
+  certainty     EventCertainty @default(DOCUMENTED)
+  /// Editorial note on what about this event is disputed, if anything.
+  disputeNote   String?
+  /// Marks events editors consider essential context for the topic.
+  keyEvent      Boolean        @default(false)
+  sources       EventSource[]
+
+  @@index([topicId, date])
+}
+
+model EventSource {
+  eventId  String
+  sourceId String
+  event    Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  source   Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, sourceId])
+}
+
+model Claim {
+  id              String        @id @default(cuid())
+  slug            String        @unique
+  code            String        @unique
+  topicId         String
+  topic           Topic         @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  /// The exact proposition being assessed.
+  proposition     String
+  /// Short, human headline for cards.
+  headline        String
+  kind            ClaimKind
+  status          ClaimStatus
+  reason          ReasonCode
+  statusRationale String
+  scope           String
+  summary         String
+  established     Json          @default("[]")
+  contested       Json          @default("[]")
+  counterevidence Json          @default("[]")
+  missingEvidence Json          @default("[]")
+  /// Viral versions of the claim and how each compares to the evidence.
+  variants        Json          @default("[]")
+  /// The precise sub-questions the claim decomposes into.
+  decomposition   Json          @default("[]")
+  publishStatus   PublishStatus @default(DRAFT)
+  aiAssisted      Boolean       @default(false)
+  draftedById     String?
+  publishedById   String?
+  publishedAt     DateTime?
+  lastReviewedAt  DateTime      @default(now())
+  version         Int           @default(1)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  evidence     EvidenceLink[]
+  votes        Vote[]
+  reports      Report[]
+  corrections  Correction[]
+  perspectives Perspective[]
+  researchJobs ResearchJob[]
+
+  @@index([topicId])
+  @@index([publishStatus])
+}
+
+model Source {
+  id           String     @id @default(cuid())
+  slug         String     @unique
+  title        String
+  publisher    String
+  author       String?
+  url          String
+  archiveUrl   String?
+  publishedAt  DateTime?
+  sourceType   SourceType
+  isPrimary    Boolean    @default(false)
+  description  String
+  limitations  String?
+  /// The original source this one repeats or is derived from.
+  derivedFromId String?
+  derivedFrom  Source?    @relation("Derivation", fields: [derivedFromId], references: [id], onDelete: SetNull)
+  derivatives  Source[]   @relation("Derivation")
+  lastCheckedAt DateTime?
+  lastHttpStatus Int?
+  createdAt    DateTime   @default(now())
+
+  evidence     EvidenceLink[]
+  events       EventSource[]
+  perspectives PerspectiveSource[]
+  reports      Report[]
+}
+
+model EvidenceLink {
+  id            String           @id @default(cuid())
+  claimId       String
+  sourceId      String
+  claim         Claim            @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  source        Source           @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  relation      EvidenceRelation
+  /// Editorial paraphrase of what this source establishes for this claim.
+  establishes   String
+  /// Page, paragraph, table or timestamp.
+  locator       String?
+  /// Verbatim quote, only when checked against the source.
+  quote         String?
+  quoteVerified Boolean          @default(false)
+  reviewerNote  String?
+  aiGenerated   Boolean          @default(false)
+  approved      Boolean          @default(true)
+  sortOrder     Int              @default(100)
+  createdAt     DateTime         @default(now())
+
+  @@unique([claimId, sourceId, relation])
+}
+
+model Perspective {
+  id               String              @id @default(cuid())
+  slug             String              @unique
+  topicId          String
+  topic            Topic               @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  claimId          String?
+  claim            Claim?              @relation(fields: [claimId], references: [id], onDelete: SetNull)
+  title            String
+  heldBy           String
+  summary          String
+  arguments        Json                @default("[]")
+  counterarguments Json                @default("[]")
+  sortOrder        Int                 @default(100)
+  sources          PerspectiveSource[]
+}
+
+model PerspectiveSource {
+  perspectiveId String
+  sourceId      String
+  perspective   Perspective @relation(fields: [perspectiveId], references: [id], onDelete: Cascade)
+  source        Source      @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@id([perspectiveId, sourceId])
+}
+
+model Vote {
+  id         String       @id @default(cuid())
+  userId     String
+  claimId    String
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  claim      Claim        @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  phase      VotePhase
+  stance     Stance
+  confidence Int
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  changes    VoteChange[]
+
+  /// One current vote per account, claim and phase.
+  @@unique([userId, claimId, phase])
+  @@index([claimId, phase])
+}
+
+model VoteChange {
+  id             String   @id @default(cuid())
+  voteId         String
+  vote           Vote     @relation(fields: [voteId], references: [id], onDelete: Cascade)
+  fromStance     Stance
+  toStance       Stance
+  fromConfidence Int
+  toConfidence   Int
+  changedAt      DateTime @default(now())
+}
+
+model Report {
+  id           String       @id @default(cuid())
+  kind         ReportKind
+  body         String
+  url          String?
+  claimId      String?
+  claim        Claim?       @relation(fields: [claimId], references: [id], onDelete: SetNull)
+  sourceId     String?
+  source       Source?      @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  userId       String?
+  user         User?        @relation("ReportAuthor", fields: [userId], references: [id], onDelete: SetNull)
+  status       ReportStatus @default(OPEN)
+  resolution   String?
+  resolvedById String?
+  resolvedBy   User?        @relation("ReportResolver", fields: [resolvedById], references: [id], onDelete: SetNull)
+  resolvedAt   DateTime?
+  createdAt    DateTime     @default(now())
+
+  @@index([status])
+}
+
+/// Public, append-only record of every material change to published content.
+model Correction {
+  id           String   @id @default(cuid())
+  claimId      String?
+  claim        Claim?   @relation(fields: [claimId], references: [id], onDelete: SetNull)
+  topicId      String?
+  topic        Topic?   @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  summary      String
+  field        String
+  before       Json?
+  after        Json?
+  reason       String
+  approvedById String?
+  approvedBy   User?    @relation(fields: [approvedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
+}
+
+/// Internal, append-only log of editorial and moderation actions.
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actor      User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  action     String
+  entityType String
+  entityId   String
+  detail     Json?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+}
+
+model ResearchJob {
+  id          String         @id @default(cuid())
+  createdById String
+  createdBy   User           @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  input       String
+  topicSlug   String?
+  status      ResearchStatus @default(QUEUED)
+  model       String
+  output      Json?
+  error       String?
+  usage       Json?
+  claimId     String?
+  claim       Claim?         @relation(fields: [claimId], references: [id], onDelete: SetNull)
+  createdAt   DateTime       @default(now())
+  completedAt DateTime?
+}
+
+model RateLimit {
+  key         String
+  windowStart DateTime
+  count       Int      @default(1)
+
+  @@id([key, windowStart])
+}

@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  background: #0b0c0e;
+}
+
+body {
+  @apply bg-canvas text-ink font-sans antialiased;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+::selection {
+  background: #b8f36b;
+  color: #0b0c0e;
+}
+
+a {
+  @apply underline-offset-4;
+}
+
+:focus-visible {
+  outline: 2px solid #b8f36b;
+  outline-offset: 2px;
+}
+
+@layer components {
+  .label {
+    @apply font-mono text-[11px] uppercase tracking-[0.14em] text-muted;
+  }
+  .h-display {
+    @apply font-display font-extrabold uppercase leading-[0.92] tracking-tight;
+  }
+  .panel {
+    @apply bg-panel border border-line;
+  }
+  .btn {
+    @apply inline-flex items-center gap-2 border px-4 py-2 font-mono text-xs uppercase tracking-[0.12em] transition-colors disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn border-accent bg-accent text-canvas hover:bg-transparent hover:text-accent;
+  }
+  .btn-ghost {
+    @apply btn border-line text-ink hover:border-accent hover:text-accent;
+  }
+  .input {
+    @apply w-full border border-line bg-canvas px-3 py-2 text-ink placeholder:text-muted/70 focus:border-accent focus:outline-none;
+  }
+  .bracket {
+    @apply relative px-2;
+  }
+  .bracket::before,
+  .bracket::after {
+    @apply absolute top-1/2 -translate-y-1/2 font-mono text-accent opacity-0 transition-opacity;
+  }
+  .bracket::before {
+    content: "[";
+    left: -2px;
+  }
+  .bracket::after {
+    content: "]";
+    right: -2px;
+  }
+  .bracket:hover::before,
+  .bracket:hover::after,
+  .bracket[aria-current="page"]::before,
+  .bracket[aria-current="page"]::after {
+    @apply opacity-100;
+  }
+  .prose-vb p {
+    @apply mb-4 max-w-prose text-[17px] leading-[1.7] text-ink/90;
+  }
+  .corner {
+    background:
+      linear-gradient(#b8f36b, #b8f36b) top left / 10px 1px no-repeat,
+      linear-gradient(#b8f36b, #b8f36b) top left / 1px 10px no-repeat,
+      linear-gradient(#b8f36b, #b8f36b) bottom right / 10px 1px no-repeat,
+      linear-gradient(#b8f36b, #b8f36b) bottom right / 1px 10px no-repeat;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

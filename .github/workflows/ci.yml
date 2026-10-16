@@ -1,0 +1,37 @@
+name: CI
+on:
+  push:
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_USER: vb, POSTGRES_PASSWORD: vb, POSTGRES_DB: verdictboard }
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U vb" --health-interval 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://vb:vb@localhost:5432/verdictboard?schema=public
+      APP_SECRET: ci-secret-0123456789abcdef0123456789abcdef
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run check:content
+      - run: npm run typecheck
+      - run: npm test
+      - run: npx prisma migrate deploy && npm run db:seed
+      - run: npm run build
+  sources:
+    # Weekly link check of every cited source. Failures are reported, not blocking.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run check:sources
